@@ -21,11 +21,17 @@ add_prog_1(char *host)
 		exit (1);
 	}
 #endif	/* DEBUG */
+	add_1_arg.a = 123;
+	add_1_arg.b = 22;
 
 	result_1 = add_1(&add_1_arg, clnt);
 	if (result_1 == (int *) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
+	else {
+	printf("result = %d\n", *result_1);
+	}
+
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */
