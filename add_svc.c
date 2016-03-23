@@ -16,6 +16,11 @@
 #define SIG_PF void(*)(int)
 #endif
 
+static void breakpoint(){
+	printf("Przerwa.Nacisnij Enter\n");
+	getc(stdin);
+}
+
 static void
 add_prog_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
@@ -25,7 +30,6 @@ add_prog_1(struct svc_req *rqstp, register SVCXPRT *transp)
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
 	char *(*local)(char *, struct svc_req *);
-
 	switch (rqstp->rq_proc) {
 	case NULLPROC:
 		(void) svc_sendreply (transp, (xdrproc_t) xdr_void, (char *)NULL);
@@ -61,10 +65,11 @@ int
 main (int argc, char **argv)
 {
 	register SVCXPRT *transp;
-
 	pmap_unset (ADD_PROG, ADD_VERS);
-
+	breakpoint();
 	transp = svcudp_create(RPC_ANYSOCK);
+	printf("Rejestracja usługi portmap odbywa się na porcie %d\n",transp->xp_port);
+	breakpoint();
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create udp service.");
 		exit(1);
@@ -73,8 +78,9 @@ main (int argc, char **argv)
 		fprintf (stderr, "%s", "unable to register (ADD_PROG, ADD_VERS, udp).");
 		exit(1);
 	}
-
 	transp = svctcp_create(RPC_ANYSOCK, 0, 0);
+	printf("Port dla gniazda TCP to %d\n",transp->xp_port);
+	breakpoint();
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create tcp service.");
 		exit(1);
@@ -85,6 +91,7 @@ main (int argc, char **argv)
 	}
 
 	svc_run ();
+	breakpoint();
 	fprintf (stderr, "%s", "svc_run returned");
 	exit (1);
 	/* NOTREACHED */
